@@ -65,6 +65,7 @@ subprojects {
             reporter "checkstyle"
             reporter "html"
         }
+
 //        kotlinScriptAdditionalPaths {
 //            include fileTree("scripts/")
 //        }
@@ -79,7 +80,7 @@ subprojects {
         config = rootProject.files("config/detekt/detekt.yml")
         failFast = true // fail build on any finding
         buildUponDefaultConfig = true // preconfigure defaults
-        autoCorrect = true
+//        autoCorrect = true
 
 //    config = files("$projectDir/config/detekt.yml") // point to your custom config defining rules to run, overwriting default behavior
 //    baseline = file("$projectDir/config/baseline.xml") // a way of suppressing issues before introducing detekt

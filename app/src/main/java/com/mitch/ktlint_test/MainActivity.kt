@@ -1,4 +1,12 @@
+/**
+ * Copyright Tandem Diabetes Care, Inc. 2020. All rights reserved.
+ * CloudAuth.kt
+ * This class has a group of functions that maps to Larcus Cloud API authentication.
+ * @author dlee Feb 28, 2018
+ */
+
 package com.mitch.ktlint_test
+
 
 import android.os.Bundle
 import android.util.Log
@@ -18,10 +26,13 @@ class MainActivity(
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        (savedInstanceState?.let { Log.d("TEST", "Test") })?.let { }
+        (savedInstanceState?.let { Log.d("TEST", "Test") })?.let {}
 
-        val test =
-            "1q234"
+        val test = "1q234"
+    }
+
+    fun test(){
+
     }
 
     fun testFunction() {

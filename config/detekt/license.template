@@ -1,0 +1,10 @@
+/**
+ * Copyright Tandem Diabetes Care, Inc. ${YEAR}.  All rights reserved.
+ * ${NAME}.kt
+ * @summary: 
+ * @author: ${USER} ${MONTH_NAME_SHORT} ${DAY}, ${YEAR} 
+ */
+
+#if (${PACKAGE_NAME} && ${PACKAGE_NAME} != "")package ${PACKAGE_NAME}
+
+#end

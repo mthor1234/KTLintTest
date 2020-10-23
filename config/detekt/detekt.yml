@@ -7,10 +7,13 @@ build:
     # style: 1
     # comments: 1
 
+
+
 config:
   validation: true
   # when writing own rules with new properties, exclude the property path e.g.: 'my_rule_set,.*>.*>[my_property]'
-  excludes: ''
+  excludes: 'custom-detekt-rules'
+
 
 processors:
   active: true
@@ -38,7 +41,7 @@ comments:
     active: true
     licenseTemplateFile: 'license.template'
   CommentOverPrivateFunction:
-    active: false
+    active: true
   CommentOverPrivateProperty:
     active: false
   EndOfSentenceFormat:
@@ -622,7 +625,7 @@ style:
   UnusedPrivateClass:
     active: true
   UnusedPrivateMember:
-    active: false
+    active: true
     allowedNames: '(_|ignored|expected|serialVersionUID)'
   UseArrayLiteralsInAnnotations:
     active: false
@@ -646,3 +649,8 @@ style:
     active: true
     excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
     excludeImports: ['java.util.*', 'kotlinx.android.synthetic.*']
+
+# Custom Rules
+custom-detekt-rules:
+  TooManyFunctions:
+    active: true
