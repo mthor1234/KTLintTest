@@ -12,6 +12,7 @@
           <set>
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/app" />
+            <option value="$PROJECT_DIR$/custom-ktlint-rules" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />
