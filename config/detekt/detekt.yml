@@ -654,3 +654,5 @@ style:
 custom-detekt-rules:
   TooManyFunctions:
     active: true
+  TOFIBRule:
+    active: true

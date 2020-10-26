@@ -22,8 +22,7 @@ import org.jetbrains.kotlin.psi.KtNamedFunction
 class TooManyFunctions : Rule() {
 
     override val issue = Issue(
-//        javaClass.simpleName,
-        "TooManyFunctions",
+                javaClass.simpleName,
         Severity.CodeSmell,
         "This rule reports a file with an excessive function count.",
         Debt.TWENTY_MINS
@@ -47,4 +46,4 @@ class TooManyFunctions : Rule() {
     }
 }
 
-const val THRESHOLD = 6
+const val THRESHOLD = 2
