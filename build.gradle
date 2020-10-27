@@ -58,7 +58,7 @@ subprojects {
         outputColorName = "RED"
 //        ignoreFailures = true
 //        enableExperimentalRules = true
-        additionalEditorconfigFile = file("C:\\Users\\mthornton\\KTLintTest\\.editorconfig")
+//        additionalEditorconfigFile = file("C:\\Users\\mthornton\\KTLintTest\\.editorconfig")
 //        disabledRules = ["final-newline"]
         reporters {
             reporter "plain"

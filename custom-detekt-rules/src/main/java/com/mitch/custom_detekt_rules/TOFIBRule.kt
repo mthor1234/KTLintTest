@@ -18,6 +18,10 @@ import org.jetbrains.kotlin.psi.psiUtil.startsWithComment
 class TOFIBRule : Rule() {
 
     lateinit var currentFile: KtFile
+    lateinit var currentFileName: String
+
+    val copyright =
+        "/*\n* Copyright Tandem Diabetes Care, Inc. 2020. All rights reserved.\n* CloudAuth.kt\n* This class has a group of functions that maps to Larcus Cloud API authentication.\n* @author dlee Feb 28, 2018\n*/"
 
     override val issue = Issue(
         javaClass.simpleName,
@@ -31,46 +35,64 @@ class TOFIBRule : Rule() {
     override fun visitKtFile(file: KtFile) {
         super.visitKtFile(file)
         currentFile = file
+        currentFileName = file.name
 
-        if (!file.startsWithComment()) {
+        System.out.println("Visiting File")
+        System.out.println("${currentFile.text}")
 
-            file.children.forEach {
-                if(it is PsiComment){
-                    report(
-                        CodeSmell(
-                            issue, Entity.atPackageOrFirstDecl(currentFile),
-                            message = "Comment Found"
-                        )
-                    )
-                }
+        if (file.text.contains(copyright)) {
+            System.out.println("Copyright Found")
+        }
 
+        file.children.let {
+
+            System.out.println("Child Found")
+
+            if (it is PsiComment) {
+                System.out.println("Child Found: ${it.text}")
+                checkTofibForCorrectness(it.text)
             }
-
-            report(
-                CodeSmell(
-                    issue, Entity.atPackageOrFirstDecl(file),
-                    message = "File doesn't start with a TOFIB"
-                )
-            )
         }
     }
 
 
-//    override fun visitComment(comment: PsiComment?) {
-//        super.visitComment(comment)
-//        report(
-//            CodeSmell(
-//                issue, Entity.atPackageOrFirstDecl(currentFile),
-//                message = "Comment Found"
-//            )
-//        )
-//    }
+    fun checkTofibForCorrectness(commentString: String) {
 
+        report(
+            CodeSmell(
+                issue, Entity.atPackageOrFirstDecl(currentFile),
+                message = "${commentString}"
+            )
+        )
+    }
 
+    fun parseFileName(tofibText: String): String? {
+        println("parseFileName(): ${tofibText}")
+        println("currentFIleName: ${currentFileName}")
 
-    fun readComment(file: KtFile){
-        file.hasCommentInside()
+        if (tofibText.contains(currentFileName)) {
+            return currentFileName
+        }
+        return null
+    }
 
+    fun retrieveAuthorLine(tofibText: String) {
+        val authorRegex = Regex("((\\* @author )([A-Z][a-z]+([ ]?[A-Z][a-z]+)))")
+        authorRegex.find(tofibText)?.let {
+            parseAuthor(it.value)
+            parseCreationDate(it.value)
+        }
+
+    }
+
+    fun parseAuthor(tofibText: String): String? {
+        val firstLastRegex = Regex("([A-Z][a-z]+([ ]?[A-Z][a-z]+))")
+        return firstLastRegex.find(tofibText)?.value ?: null
+    }
+
+    fun parseCreationDate(tofibText: String): String? {
+        val creationDateRegex = Regex("([A-Z][a-z]{2} [0-2]?[0-9], [0-9]{4})")
+        return creationDateRegex.find(tofibText)?.value ?: null
     }
 }
 
