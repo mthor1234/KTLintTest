@@ -3,7 +3,6 @@ import com.mitch.customDetektRules.TOFIBRule
 import io.gitlab.arturbosch.detekt.test.assertThat
 import io.gitlab.arturbosch.detekt.test.lint
 import junit.framework.Assert.*
-import org.jetbrains.kotlin.psi.KtFile
 import org.junit.Test
 
 /*
@@ -19,28 +18,15 @@ class TOFIBRuleTest() {
     val copyRightPostYear = ". All rights reserved."
     val copyrightClassName = "* ${javaClass.simpleName}.kt"
     val copyrightDescription = "* This class has a group of functions that maps to the Cloud API authentication."
-    val copyrightAuthor = "* @author Mitch Thornton Feb 28, 2018"
+    val copyrightAuthor = " * @author Mitch Thornton Feb 28, 2018"
 
     val correctFirstLine = " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved."
     val correctFirstLineHyphen = " * Copyright Mitchell James Thornton, Inc. 2018-2020. All rights reserved."
     val correctClassName = " * TOFIBRule.kt"
-    val correctDescriptionLine = " * This is a test description.... Perioids, ___, or | Should work"
-
+    val correctDescriptionLine = " * This is a test description.... Periods, ___, or | Should work"
 
     // YYYY | YYYY-YYYY
     val copyrightYearsREGEX = Regex("(([0-9]{4})-([0-9]{4}))|([0-9]{4})")
-
-
-    @Test
-    fun `TOFIB RULE TEST`() {
-
-        val tofibRule = TOFIBRule()
-
-        val findings = tofibRule.lint("""
-            $COPYRIGHT
-        """.trimIndent())
-        assertThat(findings).hasSize(1)
-    }
 
     ////// Update Line //////
     @Test
@@ -156,7 +142,7 @@ class TOFIBRuleTest() {
         tofibRule.lint("""
             $COPYRIGHT
         """.trimIndent())
-        assertFalse(tofibRule.checkUpdateLine(firstLineExtraSpace))
+        assertTrue(tofibRule.checkUpdateLine(firstLineExtraSpace))
     }
 
 
@@ -251,26 +237,373 @@ class TOFIBRuleTest() {
     ////// File Description Line //////
 
     @Test
-    fun `checkDescription() Correct Description Expect True`() {
+    fun `checkIfValidDescriptionLine() Correct Description Expect True`() {
         val tofibRule = TOFIBRule()
 
         tofibRule.lint("""
             $COPYRIGHT
         """.trimIndent())
-        assertTrue(tofibRule.checkDescription(COPYRIGHT))
+        assertTrue(tofibRule.checkIfValidDescriptionLine(correctDescriptionLine))
+    }
+
+    @Test
+    fun `checkIfValidDescriptionLine() Correct Description Extra Space After * Expect True`() {
+
+        val descriptionLineMissingStar = " *  This is a test description.... Perioids, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+    @Test
+    fun `checkIfValidDescriptionLine() Correct Description Two Tabs After * Expect True`() {
+
+        val descriptionLineMissingStar = " *        This is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+    @Test
+    fun `checkIfValidDescriptionLine() Correct Description Line Elipses After * Expect True`() {
+
+        val descriptionLineMissingStar = " * ......This is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
     }
 
 
-    // TODO: 10/27/20 Add More Test Cases! 
+    @Test
+    fun `checkIfValidDescriptionLine() Correct Description Line CAPS After * Expect True`() {
+
+        val descriptionLineMissingStar = " * TESTING is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+    @Test
+    fun `checkIfValidDescriptionLine() Correct Description Line Extra Spaces At End Expect True`() {
+
+        val descriptionLineMissingStar = " * TESTING is a test description.... Periods, ___, or | Should work    "
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+
+    @Test
+    fun `checkIfValidDescriptionLine() Incorrect Description Missing * Expect False`() {
+
+        val descriptionLineMissingStar = " This is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+
+    @Test
+    fun `checkIfValidDescriptionLine() Incorrect Description Missing Space Before * Expect False`() {
+
+        val descriptionLineMissingStar = "* This is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+    @Test
+    fun `checkIfValidDescriptionLine() Incorrect Description Extra Space Before * Expect False`() {
+
+        val descriptionLineMissingStar = "  * This is a test description.... Periods, ___, or | Should work"
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
+    }
+
+
+    ////// Description With Entire Copyright Fed //////
 
 
 
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Correct Description Expect True`() {
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkTOFIBForDescription(COPYRIGHT))
+    }
+
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Two Line Description Expect True`() {
+
+        val TOFIBMultiLineDescription =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
 
 
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkTOFIBForDescription(TOFIBMultiLineDescription))
+    }
+
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Ten Line Description Expect True`() {
+
+        val TOFIBMultiLineDescription =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkTOFIBForDescription(TOFIBMultiLineDescription))
+    }
+
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Two Line Description Tab Expect True`() {
+
+        val TOFIBMultiLineDescription =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " *         This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
 
 
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkTOFIBForDescription(TOFIBMultiLineDescription))
+    }
 
 
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Description Missing Expect False`() {
+
+        val TOFIBDescriptionMissingStar =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkIfValidDescriptionLine(TOFIBDescriptionMissingStar))
+    }
+
+
+    @Test
+    fun `checkTOFIBForDescription() TOFIB With Description Missing * Expect False`() {
+
+        val TOFIBDescriptionMissingStar =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
+
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkIfValidDescriptionLine(TOFIBDescriptionMissingStar))
+    }
+
+    ////// Author Line //////
+
+    @Test
+    fun `checkAuthorLine() Correct Author Line Expect True`() {
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertTrue(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author Line Missing Space Before * Expect False`() {
+
+        val copyrightAuthor = "* @author Mitch Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author Line Extra Space After * Expect False`() {
+
+        val copyrightAuthor = "*  @author Mitch Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author Line Missing * Expect False`() {
+
+        val copyrightAuthor = " @author Mitch Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author Line Missing @author Expect False`() {
+
+        val copyrightAuthor = " * Mitch Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author Line Missing First Name Expect False`() {
+
+        val copyrightAuthor = " * @author Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+
+    @Test
+    fun `checkAuthorLine() Incorrect Author First Initial Dot Last Name Expect False`() {
+
+        val copyrightAuthor = " * @author M.Thornton Feb 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+
+    @Test
+    fun `checkAuthorLine() Incorrect Missing Month Expect False`() {
+
+        val copyrightAuthor = " * @author Mitch Thornton 28, 2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    @Test
+    fun `checkAuthorLine() Incorrect Month Format Slashes Expect False`() {
+
+        val copyrightAuthor = " * @author Mitch Thornton 9/28/2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    @Test
+    fun `checkAuthorLine() Incorrect Month Format Periods Expect False`() {
+
+        val copyrightAuthor = " * @author Mitch Thornton 9.28.2018"
+
+        val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
 
 
 
@@ -285,20 +618,21 @@ class TOFIBRuleTest() {
     @Test
     fun `parseAuthor() Empty String Expect Null`() {
         val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+
         assertNull(tofibRule.parseAuthor(""))
-    }
-
-    @Test
-    fun `parseAuthor() Only First Name Expect Null`() {
-        val tofibRule = TOFIBRule()
-        val copyrightAuthor = "* @author Mitch Feb 08, 2018"
-
-        assertNull(tofibRule.parseAuthor(copyrightAuthor))
     }
 
     @Test
     fun `parseCreationDate() Day Formatted with 0 Will Not Return Null`() {
         val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
 
         val copyrightAuthor = "* @author Mitch Thornton Feb 08, 2018"
         assertEquals("Feb 08, 2018", tofibRule.parseCreationDate(copyrightAuthor))
@@ -309,6 +643,10 @@ class TOFIBRuleTest() {
     fun `parseCreationDate() Day Formatted With Two Digits Will Not Return Null`() {
         val tofibRule = TOFIBRule()
 
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+
         val copyrightAuthor = "* @author Mitch Thornton Feb 28, 2018"
         assertEquals("Feb 28, 2018", tofibRule.parseCreationDate(copyrightAuthor))
     }
@@ -317,6 +655,10 @@ class TOFIBRuleTest() {
     fun `parseCreationDate() Formatted MMDDYYYY Will Return Null`() {
         val tofibRule = TOFIBRule()
 
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
+
         val copyrightAuthor = "* @author Mitch Thornton 08/28/2018"
         assertNull(tofibRule.parseCreationDate(copyrightAuthor))
     }
@@ -324,6 +666,10 @@ class TOFIBRuleTest() {
     @Test
     fun `parseCreationDate() Without Date Will Return Null`() {
         val tofibRule = TOFIBRule()
+
+        tofibRule.lint("""
+            $COPYRIGHT
+        """.trimIndent())
 
         val copyrightAuthor = "* @author Mitch Thornton "
         assertNull(tofibRule.parseCreationDate(copyrightAuthor))

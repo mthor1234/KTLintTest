@@ -1,8 +1,8 @@
 /**
  * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.
- * Test.kt
- * @summary:
- * @author: Mitch Thornton Oct 23, 2020
+ * MainActivity.kt
+ * This is a test description
+ * @author Mitch Thornton Oct 23, 2020
  */
 
 package com.mitch.ktlintTest

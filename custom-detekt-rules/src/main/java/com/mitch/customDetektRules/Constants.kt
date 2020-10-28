@@ -22,7 +22,7 @@ class Constants {
         "/*\n" +
             "* Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
             "* CloudAuth.kt\n" +
-            "* This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+            " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
             "* @author Mitchell Thornton Feb 28, 2018\n" +
             "*/"
 
@@ -31,10 +31,16 @@ class Constants {
             Regex("(( \\* Copyright Mitchell James Thornton, Inc.)" +
                 "[\\s]([0-9]{4})([-]([0-9]{4}))?)(. All rights reserved.)")
         val COPYRIGHT_REGEX_DESCRIPTION =
-            Regex("(^\\* (.{20,}))") // Starts with * and has at least 20 characters
-        val COPYRIGHT_REGEX_AUTHOR = Regex("((\\* @author )([A-Z][a-z]+([ ]?[A-Z][a-z]+)))")
+            Regex("(^ \\* (.{20,}))") // Starts with  * and has at least 20 characters
+
+        // Author
+        val COPYRIGHT_REGEX_AUTHOR = Regex("((^ \\* @author )([A-Z][a-z]+([ ][A-Z][a-z]+)))")
         val COPYRIGHT_REGEX_FIRST_LAST_NAME = Regex("([A-Z][a-z]+([ ]?[A-Z][a-z]+))")
         val COPYRIGHT_REGEX_CREATION_DATE = Regex("([A-Z][a-z]{2} [0-2]?[0-9], [0-9]{4})")
+        val COPYRIGHT_REGEX_AUTHOR_LINE =
+            Regex( "${COPYRIGHT_REGEX_AUTHOR.pattern} ${COPYRIGHT_REGEX_CREATION_DATE}")
+
+
         val COPYRIGHT_REGEX_YEAR_SPAN = Regex("([0-9]{4})([-]([0-9]{4}))?")
 
         // ISSUES
