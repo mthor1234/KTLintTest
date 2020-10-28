@@ -1,4 +1,4 @@
-package com.mitch.ktlint_test
+package com.mitch.ktlintTest
 
 import junit.framework.Assert.assertEquals
 import org.junit.Test

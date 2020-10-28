@@ -1,14 +1,15 @@
+/**
+ * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.
+ * Test.kt
+ * @summary:
+ * @author: Mitch Thornton Oct 23, 2020
+ */
 
-package com.mitch.ktlint_test
-
-// Test Comment
+package com.mitch.ktlintTest
 
 import android.os.Bundle
 import android.util.Log
-import androidx.appcompat.app.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.ActionBar
-import java.lang.Math.PI
 
 class MainActivity(
     val testOne: Int,
@@ -19,15 +20,9 @@ class MainActivity(
 ) : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+//        setContentView(R.layout.activity_main)
 
         (savedInstanceState?.let { Log.d("TEST", "Test") })?.let {}
-
-        val test = "1q234"
-    }
-
-    fun test(){
-
     }
 
     fun testFunction() {

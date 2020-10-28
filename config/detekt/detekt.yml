@@ -39,7 +39,7 @@ comments:
   excludes: ['**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**']
   AbsentOrWrongFileLicense:
     active: false
-#    licenseTemplateFile: 'license.template'
+    licenseTemplateFile: 'license.template'
   CommentOverPrivateFunction:
     active: true
   CommentOverPrivateProperty:
@@ -509,7 +509,7 @@ style:
     active: false
     includeLineWrapping: false
   ForbiddenComment:
-    active: true
+    active: false
     values: ['TODO:', 'FIXME:', 'STOPSHIP:']
     allowedPatterns: ''
   ForbiddenImport:
