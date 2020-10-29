@@ -345,11 +345,7 @@ class TOFIBRuleTest() {
         assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
     }
 
-
     ////// Description With Entire Copyright Fed //////
-
-
-
     @Test
     fun `checkTOFIBForDescription() TOFIB With Correct Description Expect True`() {
 
@@ -599,10 +595,43 @@ class TOFIBRuleTest() {
 
         val tofibRule = TOFIBRule()
 
-        tofibRule.lint("""
+        tofibRule.lint(
+            "$COPYRIGHT".trimIndent())
+        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+    }
+
+    ////// Entire Copyright //////
+
+    @Test
+    fun `TOFIBRule() Valid Copyright Expect No Findings`() {
+
+        val tofibRule = TOFIBRule()
+
+        val findings = tofibRule.lint("""
             $COPYRIGHT
         """.trimIndent())
-        assertFalse(tofibRule.checkAuthorLine(copyrightAuthor))
+        assertThat(findings).hasSize(0)
+    }
+
+
+    @Test
+    fun `TOFIB RULE TEST`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraCopyRight =
+            "/*\n" +
+                " *\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * CloudAuth.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
+
+        val findings = tofibRule.lint("""
+            $extraCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(0)
     }
 
 

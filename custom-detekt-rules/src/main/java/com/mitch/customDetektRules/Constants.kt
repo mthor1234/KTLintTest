@@ -20,15 +20,15 @@ class Constants {
 
         const val COPYRIGHT =
         "/*\n" +
-            "* Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-            "* CloudAuth.kt\n" +
-            " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
-            "* @author Mitchell Thornton Feb 28, 2018\n" +
-            "*/"
+        " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+        " * Test.kt\n" +
+        " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+        " * @author Mitchell Thornton Feb 28, 2018\n" +
+        " */"
 
         // REGEX
         val COPYRIGHT_REGEX_UPDATE_LINE =
-            Regex("(( \\* Copyright Mitchell James Thornton, Inc.)" +
+            Regex("^(( \\* Copyright Mitchell James Thornton, Inc.)" +
                 "[\\s]([0-9]{4})([-]([0-9]{4}))?)(. All rights reserved.)")
         val COPYRIGHT_REGEX_DESCRIPTION =
             Regex("(^ \\* (.{20,}))") // Starts with  * and has at least 20 characters

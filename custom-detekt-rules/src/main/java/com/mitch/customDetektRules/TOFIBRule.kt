@@ -36,8 +36,7 @@ class TOFIBRule : Rule() {
 
     lateinit var currentFile: KtFile
     lateinit var currentFileName: String
-
-
+    lateinit var tofib: TOFIB
 
     override val issue = Issue(
         javaClass.simpleName,
@@ -46,7 +45,6 @@ class TOFIBRule : Rule() {
         Debt.FIVE_MINS
     )
 
-    lateinit var tofib: TOFIB
 
     override fun visitKtFile(file: KtFile) {
         super.visitKtFile(file)
@@ -55,69 +53,76 @@ class TOFIBRule : Rule() {
 
         System.out.println("Visiting File")
 
-        crudeTOFIBCheck(file.text)
-
-
-        // TODO: 10/27/20 Probably need a better check  
-
-//        file.children.let {
-//            System.out.println("Child Found")
-
-//            if (it is PsiComment) {
-//                System.out.println("Child Found: ${it.text}")
-//                checkTOFIBForCorrectness(it.text)
-//            }
-//        }
+        // TODO: 10/28/20 Need to find where the TOFIB is located first.. Then check for size
+//        crudeTOFIBCheck(file.text)
+        checkTOFIBForCorrectness(file.text)
     }
 
 
-    fun crudeTOFIBCheck(tofibText: String){
-        checkUpdateLine(tofibText)
-//        checkFileName(tofibText)
-//        checkTOFIBForDescription(tofibText)
-//        checkAuthorLine(tofibText)
-
-    }
-
-//    fun checkTOFIBForCorrectness(tofibText: String) {
-//        tofibText.split("\n").let { tofibLine: List<String> ->
-//            for (lineNumber in 1..tofibLine.size) {
-//                when {
-//                    lineNumber == 1 -> checkUpdateLine(tofibLine.get(lineNumber))
-//                    lineNumber == 2 -> parseFileName(tofibLine.get(lineNumber))
-//                    lineNumber >= 3 -> parseDescription(tofibLine.get(lineNumber))
-////                    4 -> parseAuthor(tofibLine.get(lineNumber))
-//                }
-//            }
-//        }
+//    fun crudeTOFIBCheck(tofibText: String){
+//
+//        println("crudeTOFIBCheck(): \n$tofibText")
+//
+//        checkUpdateLine(tofibText)
+////        checkFileName(tofibText)
+////        checkTOFIBForDescription(tofibText)
+////        checkAuthorLine(tofibText)
+//
 //    }
 
-    fun checkUpdateLine(tofibText: String) : Boolean {
-        println("checkUpdateLine() : $tofibText")
+    fun checkTOFIBForCorrectness(tofibText: String) {
+        tofibText.split("\n").let { tofibLine: List<String> ->
+
+            if (tofibLine.size > MIN_NUMBER_OF_TOFIB_LINES) {
+
+                for (lineNumber in 1..tofibLine.size - 2) {
+                    when {
+                        lineNumber == 1 -> checkUpdateLine(tofibLine.get(lineNumber))
+                        lineNumber == 2 -> checkFileName(tofibLine.get(lineNumber))
+                        lineNumber >= 3 && lineNumber != tofibLine.size - 2 -> checkIfValidDescriptionLine(tofibLine.get(lineNumber))
+                        lineNumber == tofibLine.size - 2 -> checkAuthorLine(tofibLine.get(lineNumber))
+                        else -> createIssue("Something wrong with the TOFIB")
+                    }
+                }
+            } else {
+                createIssue(COPYRIGHT_ISSUE_TOFIB_NUMBER_OF_LINES)
+            }
+        }
+    }
+
+    fun checkUpdateLine(tofibText: String): Boolean {
+        println("checkUpdateLine() : \n$tofibText")
         COPYRIGHT_REGEX_UPDATE_LINE.find(tofibText)?.let {
-            parseYearRange(it.value)
+            // TODO: 10/28/20 Consider adding back in at somepoint
+//            parseYearRange(it.value)
+
+            println("checkUpdateLine() Success")
+
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_UPDATE_LINE_DOESNT_MATCH)
 
         return false
     }
 
-    fun checkFileName(tofibText: String) : Boolean {
+    fun checkFileName(tofibText: String): Boolean {
 
-        println("checkFileName(): ${tofibText}")
+        println("checkFileName(): \n${tofibText}")
 
         fileNameRegex(javaClass.simpleName).find(tofibText)?.let {
-            parseYearRange(it.value)
+
+//            parseYearRange(it.value)
+
+            println("checkFileName() Success")
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_FILE_NAME_DOESNT_MATCH)
         return false
     }
 
-    fun checkTOFIBForDescription(tofibText: String) : Boolean {
-        println("checkTOFIBForDescription(): $tofibText")
+    fun checkTOFIBForDescription(tofibText: String): Boolean {
+        println("checkTOFIBForDescription(): \n$tofibText")
 
         tofibText.split("\n").let { tofibLines: List<String> ->
-            if(tofibLines.size >= MIN_NUMBER_OF_TOFIB_LINES) {
+            if (tofibLines.size >= MIN_NUMBER_OF_TOFIB_LINES) {
                 // Description starts at line 3 but does not have a limit on how long it can be
                 // Description falls in between FileName and Author
                 // Author should occur - 1 from the end
@@ -127,16 +132,18 @@ class TOFIBRule : Rule() {
 
                     var line = tofibLines.get(lineNumber)
 
-                    println("checkTOFIBForDescription(): \n lineNumber: $lineNumber\n" +
-                        "${line}")
+                    println(
+                        "checkTOFIBForDescription(): \n lineNumber: $lineNumber\n" +
+                            "${line}"
+                    )
                     // If there is an issue found, stop the loop & return false
-                     if(!checkIfValidDescriptionLine(line)){
-                         return false
-                     }
+                    if (!checkIfValidDescriptionLine(line)) {
+                        return false
+                    }
                 }
                 // Entire Description has been processed with no issues, return true
                 return true
-            }else{
+            } else {
                 createIssue(COPYRIGHT_ISSUE_TOFIB_NUMBER_OF_LINES)
                 println("checkDescription(): $COPYRIGHT_ISSUE_TOFIB_NUMBER_OF_LINES")
                 return false
@@ -145,32 +152,51 @@ class TOFIBRule : Rule() {
         return false
     }
 
-    fun checkIfValidDescriptionLine(descriptionLine: String) : Boolean {
-        // Ensure that the current line doesn't match other line REGEX's
-        if (!checkUpdateLine(descriptionLine) &&
-            !checkFileName(descriptionLine) &&
-            !checkAuthorLine(descriptionLine)) {
+
+//    fun checkTOFIBLineForDescription(tofibText: String): Boolean {
+//        println("checkTOFIBForDescription(): \n$tofibText")
+//
+//        // If there is an issue found, stop the loop & return false
+//        if (!checkIfValidDescriptionLine(tofibText)) {
+//            return false
+//        }
+//        // Entire Description has been processed with no issues, return true
+//        return true
+//    }
+
+
+    fun checkIfValidDescriptionLine(descriptionLine: String): Boolean {
+
+        println("checkIfValidDescriptionLine(): \n$descriptionLine")
+
+
+//        // Ensure that the current line doesn't match other line REGEX's
+//        if (!checkUpdateLine(descriptionLine) &&
+//            !checkFileName(descriptionLine) &&
+//            !checkAuthorLine(descriptionLine)
+//        ) {
 
             COPYRIGHT_REGEX_DESCRIPTION.find(descriptionLine)?.let {
-                println("checkDescription(): $COPYRIGHT_REGEX_DESCRIPTION")
                 return true
             } ?: createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
             println("checkDescription(): One $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
             return false
-        }else{
-            createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
-            println("checkDescription(): Two $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
-            return false
-        }
+//        } else {
+//            createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
+//            println("checkDescription(): Two $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
+//            return false
+//        }
 
     }
 
-    fun checkAuthorLine(tofibText: String) : Boolean {
-        println("checkAuthorLine(): $tofibText")
+    fun checkAuthorLine(tofibText: String): Boolean {
+        println("checkAuthorLine(): \n$tofibText")
 
         COPYRIGHT_REGEX_AUTHOR_LINE.find(tofibText)?.let {
 //            if(parseAuthor(it.value) != null && parseCreationDate(it.value) != null) {
-                return true
+            println("checkAuthorLine() Success")
+
+            return true
 //            }
         } ?: createIssue(COPYRIGHT_ISSUE_AUTHOR_DOESNT_MATCH)
 
@@ -197,6 +223,9 @@ class TOFIBRule : Rule() {
             }
             years[0] = creationYear
             years[1] = updatedYear
+        } ?: run {
+            println("parseYearRange() : Couldn't find year range!")
+            createIssue(COPYRIGHT_ISSUE_YEAR_RANGE_DOESNT_MATCH)
         }
         return years
     }
