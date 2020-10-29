@@ -1,6 +1,6 @@
-/*
+/**
  * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.
- * TOFIBRuleTest.kt
+ * TOFIBRule.kt
  * This class has a group of functions that maps to Larcus Cloud API authentication.
  * @author Mitchell Thornton Feb 28, 2018
  */
@@ -11,6 +11,7 @@ import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_AUTHOR_DO
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_CREATION_DATE_DOESNT_MATCH
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_FILE_NAME_DOESNT_MATCH
+import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_TOFIB_DOESNT_MATCH
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_TOFIB_NUMBER_OF_LINES
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_UPDATE_LINE_DOESNT_MATCH
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_ISSUE_YEAR_RANGE_DOESNT_MATCH
@@ -19,6 +20,7 @@ import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_AUTHOR_LI
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_CREATION_DATE
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_DESCRIPTION
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_FIRST_LAST_NAME
+import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_TOFIB
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_UPDATE_LINE
 import com.mitch.customDetektRules.Constants.Companion.COPYRIGHT_REGEX_YEAR_SPAN
 import com.mitch.customDetektRules.Constants.Companion.MIN_NUMBER_OF_TOFIB_LINES
@@ -50,31 +52,26 @@ class TOFIBRule : Rule() {
         super.visitKtFile(file)
         currentFile = file
         currentFileName = file.name
-
-        System.out.println("Visiting File")
-
-        // TODO: 10/28/20 Need to find where the TOFIB is located first.. Then check for size
-//        crudeTOFIBCheck(file.text)
-        checkTOFIBForCorrectness(file.text)
+        crudeTOFIBCheck(file.text)
     }
 
 
-//    fun crudeTOFIBCheck(tofibText: String){
-//
-//        println("crudeTOFIBCheck(): \n$tofibText")
-//
-//        checkUpdateLine(tofibText)
-////        checkFileName(tofibText)
-////        checkTOFIBForDescription(tofibText)
-////        checkAuthorLine(tofibText)
-//
-//    }
+    fun crudeTOFIBCheck(tofibText: String): Boolean{
+        println("crudeTOFIBCheck(): $tofibText")
+        if(COPYRIGHT_REGEX_TOFIB.find(tofibText) == null){
+            createIssue(COPYRIGHT_ISSUE_TOFIB_DOESNT_MATCH)
+            return false
+        }
+        return true
+    }
+
 
     fun checkTOFIBForCorrectness(tofibText: String) {
         tofibText.split("\n").let { tofibLine: List<String> ->
 
             if (tofibLine.size > MIN_NUMBER_OF_TOFIB_LINES) {
 
+                // TODO: 10/29/20 Need to fix the total number of lines, by finding when the TOFIB ends... This is just temporary, to see how the rest of the code is working
                 for (lineNumber in 1..tofibLine.size - 2) {
                     when {
                         lineNumber == 1 -> {
@@ -114,11 +111,7 @@ class TOFIBRule : Rule() {
     fun checkUpdateLine(tofibText: String): Boolean {
         println("checkUpdateLine() : \n$tofibText")
         COPYRIGHT_REGEX_UPDATE_LINE.find(tofibText)?.let {
-            // TODO: 10/28/20 Consider adding back in at somepoint
-//            parseYearRange(it.value)
-
             println("checkUpdateLine() Success")
-
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_UPDATE_LINE_DOESNT_MATCH)
 
@@ -130,9 +123,6 @@ class TOFIBRule : Rule() {
         println("checkFileName(): \n${tofibText}")
 
         fileNameRegex(javaClass.simpleName).find(tofibText)?.let {
-
-//            parseYearRange(it.value)
-
             println("checkFileName() Success")
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_FILE_NAME_DOESNT_MATCH)
@@ -175,52 +165,26 @@ class TOFIBRule : Rule() {
     }
 
 
-//    fun checkTOFIBLineForDescription(tofibText: String): Boolean {
-//        println("checkTOFIBForDescription(): \n$tofibText")
-//
-//        // If there is an issue found, stop the loop & return false
-//        if (!checkIfValidDescriptionLine(tofibText)) {
-//            return false
-//        }
-//        // Entire Description has been processed with no issues, return true
-//        return true
-//    }
-
-
     fun checkIfValidDescriptionLine(descriptionLine: String): Boolean {
 
         println("checkIfValidDescriptionLine(): \n$descriptionLine")
-
-
-//        // Ensure that the current line doesn't match other line REGEX's
-//        if (!checkUpdateLine(descriptionLine) &&
-//            !checkFileName(descriptionLine) &&
-//            !checkAuthorLine(descriptionLine)
-//        ) {
 
         COPYRIGHT_REGEX_DESCRIPTION.find(descriptionLine)?.let {
             println("checkIfValidDescriptionLine(): SUCCESS")
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
+
         println("checkIfValidDescriptionLine(): One $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
         return false
-//        } else {
-//            createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
-//            println("checkDescription(): Two $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
-//            return false
-//        }
-
     }
 
     fun checkAuthorLine(tofibText: String): Boolean {
         println("checkAuthorLine(): \n$tofibText")
 
         COPYRIGHT_REGEX_AUTHOR_LINE.find(tofibText)?.let {
-//            if(parseAuthor(it.value) != null && parseCreationDate(it.value) != null) {
             println("checkAuthorLine() Success")
 
             return true
-//            }
         } ?: createIssue(COPYRIGHT_ISSUE_AUTHOR_DOESNT_MATCH)
 
         return false

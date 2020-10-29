@@ -5,7 +5,7 @@ import io.gitlab.arturbosch.detekt.test.lint
 import junit.framework.Assert.*
 import org.junit.Test
 
-/*
+/**
  * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.
  * TOFIBRuleTest.kt
  * This class has a group of functions that maps to Larcus Cloud API authentication.
@@ -333,18 +333,6 @@ class TOFIBRuleTest() {
         assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
     }
 
-    @Test
-    fun `checkIfValidDescriptionLine() Incorrect Description Extra Space Before * Expect False`() {
-
-        val descriptionLineMissingStar = "  * This is a test description.... Periods, ___, or | Should work"
-        val tofibRule = TOFIBRule()
-
-        tofibRule.lint("""
-            $COPYRIGHT
-        """.trimIndent())
-        assertFalse(tofibRule.checkIfValidDescriptionLine(descriptionLineMissingStar))
-    }
-
     ////// Description With Entire Copyright Fed //////
     @Test
     fun `checkTOFIBForDescription() TOFIB With Correct Description Expect True`() {
@@ -432,11 +420,7 @@ class TOFIBRuleTest() {
     fun `checkTOFIBForDescription() TOFIB With Description Missing Expect False`() {
 
         val TOFIBDescriptionMissingStar =
-            "/*\n" +
-                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-                " * CloudAuth.kt\n" +
-                " * @author Mitchell Thornton Feb 28, 2018\n" +
-                "*/"
+            "/*\n"
 
         val tofibRule = TOFIBRule()
 
@@ -451,12 +435,7 @@ class TOFIBRuleTest() {
     fun `checkTOFIBForDescription() TOFIB With Description Missing * Expect False`() {
 
         val TOFIBDescriptionMissingStar =
-            "/*\n" +
-                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-                " * CloudAuth.kt\n" +
-                " This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
-                " * @author Mitchell Thornton Feb 28, 2018\n" +
-                "*/"
+                " This class has a group of functions that maps to Larcus Cloud API authentication.\n"
 
 
         val tofibRule = TOFIBRule()
@@ -725,26 +704,20 @@ class TOFIBRuleTest() {
         assertThat(findings).hasSize(1)
     }
 
+    // CrudeTOFIB
     @Test
-    fun `TOFIBRule() Entire Copyright No Author Line Expect One Finding`() {
+    fun `CrudeTOFIB() Entire Copyright No Description Line Expect True`() {
 
         val tofibRule = TOFIBRule()
 
-        val extraStarCopyRight =
-            "/*\n" +
-                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-                " * TOFIBRule.kt\n" +
-                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
-                " */"
-
         val findings = tofibRule.lint("""
-            $extraStarCopyRight
+            $COPYRIGHT
         """.trimIndent())
-        assertThat(findings).hasSize(1)
+
+        assertTrue(tofibRule.crudeTOFIBCheck(COPYRIGHT))
     }
 
 
-    // Older tests.. Need to double check
     @Test
     fun `parseAuthor() Normal String Expect Correct Author`() {
         val tofibRule = TOFIBRule()
