@@ -607,33 +607,141 @@ class TOFIBRuleTest() {
 
         val tofibRule = TOFIBRule()
 
-        val findings = tofibRule.lint("""
-            $COPYRIGHT
-        """.trimIndent())
+        val findings = tofibRule.lint("$COPYRIGHT".trimIndent())
         assertThat(findings).hasSize(0)
     }
 
 
     @Test
-    fun `TOFIB RULE TEST`() {
+    fun `TOFIBRule() Entire Copyright Extra * And Line Expect One Finding`() {
 
         val tofibRule = TOFIBRule()
 
-        val extraCopyRight =
+        val extraStarCopyRight =
             "/*\n" +
                 " *\n" +
                 " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-                " * CloudAuth.kt\n" +
+                " * TOFIBRule.kt\n" +
                 " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
                 " * @author Mitchell Thornton Feb 28, 2018\n" +
                 "*/"
 
         val findings = tofibRule.lint("""
-            $extraCopyRight
+            $extraStarCopyRight
         """.trimIndent())
-        assertThat(findings).hasSize(0)
+        assertThat(findings).hasSize(1)
     }
 
+    @Test
+    fun `TOFIBRule() Entire Copyright No Start * Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/* Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * TOFIBRule.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                "*/"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
+
+
+    @Test
+    fun `TOFIBRule() Entire Copyright No End * Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * TOFIBRule.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018 */"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
+
+
+    @Test
+    fun `TOFIBRule() Entire Copyright No Update Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/*\n" +
+                " * TOFIBRule.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                " */"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
+
+
+    @Test
+    fun `TOFIBRule() Entire Copyright No FileName Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                " */"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `TOFIBRule() Entire Copyright No Description Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * TOFIBRule.kt\n" +
+                " * @author Mitchell Thornton Feb 28, 2018\n" +
+                " */"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
+
+    @Test
+    fun `TOFIBRule() Entire Copyright No Author Line Expect One Finding`() {
+
+        val tofibRule = TOFIBRule()
+
+        val extraStarCopyRight =
+            "/*\n" +
+                " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
+                " * TOFIBRule.kt\n" +
+                " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
+                " */"
+
+        val findings = tofibRule.lint("""
+            $extraStarCopyRight
+        """.trimIndent())
+        assertThat(findings).hasSize(1)
+    }
 
 
     // Older tests.. Need to double check

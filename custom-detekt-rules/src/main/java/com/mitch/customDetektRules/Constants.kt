@@ -21,7 +21,7 @@ class Constants {
         const val COPYRIGHT =
         "/*\n" +
         " * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.\n" +
-        " * Test.kt\n" +
+        " * TOFIBRule.kt\n" +
         " * This class has a group of functions that maps to Larcus Cloud API authentication.\n" +
         " * @author Mitchell Thornton Feb 28, 2018\n" +
         " */"

@@ -77,11 +77,32 @@ class TOFIBRule : Rule() {
 
                 for (lineNumber in 1..tofibLine.size - 2) {
                     when {
-                        lineNumber == 1 -> checkUpdateLine(tofibLine.get(lineNumber))
-                        lineNumber == 2 -> checkFileName(tofibLine.get(lineNumber))
-                        lineNumber >= 3 && lineNumber != tofibLine.size - 2 -> checkIfValidDescriptionLine(tofibLine.get(lineNumber))
-                        lineNumber == tofibLine.size - 2 -> checkAuthorLine(tofibLine.get(lineNumber))
-                        else -> createIssue("Something wrong with the TOFIB")
+                        lineNumber == 1 -> {
+                            if (!checkUpdateLine(tofibLine.get(lineNumber))) {
+                                break
+                            }
+                        }
+
+                        lineNumber == 2 -> {
+                            if (!checkFileName(tofibLine.get(lineNumber))) {
+                                break
+                            }
+                        }
+
+                        lineNumber >= 3 && lineNumber != tofibLine.size - 2 -> {
+                            if (!checkIfValidDescriptionLine(tofibLine.get(lineNumber))) {
+                                break
+                            }
+                        }
+                        lineNumber == tofibLine.size - 2 -> {
+                            if (checkAuthorLine(tofibLine.get(lineNumber))) {
+                                break
+                            }
+                        }
+                        else -> {
+                            createIssue("Something wrong with the TOFIB")
+                            break
+                        }
                     }
                 }
             } else {
@@ -115,6 +136,7 @@ class TOFIBRule : Rule() {
             println("checkFileName() Success")
             return true
         } ?: createIssue(COPYRIGHT_ISSUE_FILE_NAME_DOESNT_MATCH)
+        println("checkFileName() FAILURE")
         return false
     }
 
@@ -176,11 +198,12 @@ class TOFIBRule : Rule() {
 //            !checkAuthorLine(descriptionLine)
 //        ) {
 
-            COPYRIGHT_REGEX_DESCRIPTION.find(descriptionLine)?.let {
-                return true
-            } ?: createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
-            println("checkDescription(): One $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
-            return false
+        COPYRIGHT_REGEX_DESCRIPTION.find(descriptionLine)?.let {
+            println("checkIfValidDescriptionLine(): SUCCESS")
+            return true
+        } ?: createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
+        println("checkIfValidDescriptionLine(): One $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
+        return false
 //        } else {
 //            createIssue(COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH)
 //            println("checkDescription(): Two $COPYRIGHT_ISSUE_DESCRIPTION_DOESNT_MATCH")
