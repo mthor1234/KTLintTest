@@ -1,8 +1,8 @@
 /**
- * Copyright Mitchell James Thornton, Inc. 2020. All rights reserved.
- * Test.kt
- * @summary:
- * @author: Mitch Thornton Oct 23, 2020
+ * Copyright Mitchell James Thornton, Inc. 2018-2020. All rights reserved.
+ * MainActivity.kt
+ * This is a test description It's good for testing
+ * @author Mitch Thornton 10/23/2020
  */
 
 package com.mitch.ktlintTest
@@ -20,7 +20,7 @@ class MainActivity(
 ) : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-//        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_main)
 
         (savedInstanceState?.let { Log.d("TEST", "Test") })?.let {}
     }
